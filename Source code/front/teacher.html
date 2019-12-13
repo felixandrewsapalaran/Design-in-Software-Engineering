@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Teacher Dashboard</title>
+        <link rel="stylesheet" href="css/style.css" type="text/css">
+        <!-- Consider reworking style of homepage such that only 1 style sheet is necessary-->
+        <style>
+    body, html {
+        height: 100%;
+        margin: 0;
+        font-family: Arial, Helvetica, sans-serif;
+
+    }
+    .header{
+      background-color: #990000;
+    }
+    .login{
+      text-align: center;
+    }
+
+  </style>
+    </head>
+    <body>
+      <div class = "header">
+      <img src="logo.d006f08b.png">
+    </div>
+        <h1 id="titlebar">Professor Portal</h1> <!-- Replace with 'Welcome [teacherName]!  -->
+        <div class="tabbar">
+            <button class="tablinks_t" onClick="openTab(event,'makeExam');populateQuestionTable('qTable');refreshDisplay()">Create an Exam</button>
+            <button class="tablinks_t" onClick="openTab(event,'modBank');populateQuestionTable('qBank');refreshDisplay()">Modify Question Bank</button>
+            <button class="tablinks_t" onClick="openTab(event,'reviewExams');getGradedExams();refreshDisplay()">Review Exams</button>
+            <button class="tablinks_t" onClick="logout()">Logout</button>
+        </div>
+
+        <div id="makeExam" class="tabcontent">
+            <h2>Create a new exam</h2>
+
+            <div id="examParams">
+                <b>Name:</b><input type="text" id="examName" placeholder="Exam Name"> <br>
+
+                <b>Max Points:</b><input type="text" id="maxPoints" value="100"> <br>
+
+                <b>Point Total:</b><p id="pointTotal"></p>
+                <p id="pointMessage"></p>
+                <p id="examAddStatus"></p> <br>
+
+                <button onClick="createExam()">Create Exam</button>
+            </div>
+
+            <div id="qSelection" style="width:1000px; height:400px; overflow:auto;">
+                <!-- Display for question bank-->
+                <table id="qTable" cellspacing="0" cellpadding="1" border="0" width="600px">
+                    <thead>
+                        <th>Selection</th> <!-- 0 -->
+                        <th>Question</th> <!-- 1 -->
+                        <th>Type</th> <!-- 2 -->
+                        <th>Difficulty</th> <!-- 3 -->
+                        <th>Value</th> <!-- 4 -->
+                    </thead>
+                    <tbody>
+
+                    </tbody>
+                </table>
+
+               <!-- <p class="pageNumDisplay"></p> -->
+               <!-- <button class="prevBtn" style="display:none" onclick="getPrevQuestions(0)">Previous</button> -->
+               <!-- <button class="nextBtn" onclick="getNextQuestions(0)">Next</button> -->
+            </div>
+        </div>
+
+
+        <div id="modBank" class="tabcontent">
+            <div id="qFields">
+                <h2>Add to Question Bank</h2>
+                <b>Type:</b><select id="qType">
+                    <option value="Lists">Lists</option>
+                    <option value="If Statements">If Statements</option>
+                    <option value="For Loops">For Loops</option>
+                    <option value="While Loops">While Loops</option>
+                    <option value="Strings">Strings</option>
+                    <option value="Other">Other</option>
+                </select> <br>
+
+                <b>Difficulty:</b> <select id="qDiff">
+                    <option value="easy">Easy</option>
+                    <option value="medium">Medium</option>
+                    <option value="hard">Hard</option>
+                </select> <br>
+
+                <b>Question:</b> <br>
+                <textarea id="qDesc" rows=4 cols=50 placeholder="Type question here"></textarea><br>
+                <b>Function Name:</b>
+                <input type="text" id="qFunction"/><br>
+                <b>Test Cases</b>
+                <button id="addCaseBtn" onclick="addTestCase()">+</button>
+                <button id="removeCaseBtn" onclick="removeTestCase()">-</button>
+                <div id="qTestCases">
+                    <input type="text" class="qInput" placeholder="Test Input. Ex: ''string'',num">
+                    <input type="text" class="qOutput" placeholder="Expected output.">
+                    <br/>
+                    <input type="text" class="qInput" placeholder="Test Input. Ex: ''string'',num">
+                    <input type="text" class="qOutput" placeholder="Expected output.">
+                    <br/>
+                </div>
+
+                <div id="keywordOptions">
+                    <b>Constraints</b><br>
+                    <input type="checkbox" value="for" class="keywords">For
+                    <input type="checkbox" value="while" class="keywords">While
+                    <input type="checkbox" value="if" class="keywords">If
+                </div>
+
+
+                <button onClick="addToBank()">Add Question</button> <br>
+                <p id="bankAddStatus"></p> <br>
+            </div>
+
+            <div id="qBank">
+                <h2>Question Bank</h2>
+                <b>Search Filters</b> <br>
+                <b>Type:</b> <select id="searchType">
+                   <option value="All">All</option>
+                   <option value="Lists">Lists</option>
+                   <option value="If Statements"> If Statements</option>
+                   <option value="For Loops">For Loops</option>
+                   <option value="While Loops">While Loops</option>
+                   <option value="Strings">Strings</option>
+                   <option value="Other">Other</option>
+               </select> <br>
+               <b>Difficulty:</b> <select id="searchDiff">
+                   <option value="All">All</option>
+                   <option value="easy">Easy</option>
+                   <option value="medium">Medium</option>
+                   <option value="hard">Hard</option>
+               </select> <br>
+                <input type="text" value="" placeholder="Enter any keyword." id="qSearchbox" onkeyup="startTypingCountdown()" onkeydown="clearTypingCountdown()"/>
+                <button id="searchBankBtn" onclick="searchBank()">Search</button>
+               <div id="searchableBank" style="width:600px; height:300px; overflow:auto;">
+                    <table cellspacing="0" cellpadding="1" border="0" width="500px">
+                    <thead>
+                        <th>Question</th>
+                        <th>Type</th>
+                        <th>Difficulty</th>
+                    </thead>
+
+                    <tbody>
+
+                    </tbody>
+                </table>
+               </div>
+               <!-- <p class="pageNumDisplay"></p> -->
+               <!-- <button class="prevBtn" style="display:none" onclick="getPrevQuestions(1)">Previous</button> -->
+               <!-- <button class="nextBtn" onclick="getNextQuestions(1)">Next</button> -->
+            </div>
+
+        </div>
+
+        <div id="reviewExams" class="tabcontent">
+            <div id="gradedExams">
+                <h2>Graded Exams</h2>
+
+                <table id="gradedExamTable">
+                    <thead>
+                        <th>Exam Name</th>
+                        <th>Student</th>
+                        <th>Score</th>
+                    </thead>
+                    <tbody>
+
+                    </tbody>
+                </table>
+            </div>
+
+                <p id="gradedExamAvailabilityStatus"></p>
+
+            <table id="displayedExamTable">
+                <thead>
+                    <th>Question</th>
+                    <th>Student Answer</th>
+                    <th>Feedback</th>
+                </thead>
+
+                <tbody>
+
+                </tbody>
+
+            </table>
+
+            <div id="releaseCheckbox">
+                <input type="checkbox">Release Exam
+            </div>
+            <button id="saveExamBtn" onclick="">Save Changes</button>
+            <button id="reviewBackBtn" onclick="redisplayGradedTable()">Back</button>
+            <p id="examRevisionStatus"></p>
+
+        </div>
+
+    </body>
+    <footer>
+        <script type="text/javascript" src="teacher.js"></script>
+    </footer>
+</html>
